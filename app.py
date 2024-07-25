@@ -2,7 +2,6 @@ import pickle
 import streamlit as st
 import os
 import pandas as pd
-from sklearn import feature_extraction
 
 # Load dataset for testing
 df = pd.read_csv('Language Detection.csv')
