@@ -50,7 +50,7 @@ st.write(f"### {model_option.replace('_', ' ').title()}")
 st.write(model_desc)
 
 # Load the selected model
-model_path = model_file_name
+model_path = f'{model_option.replace(" ", "_").lower()}_model.pckl'
 Lrdetect_Model = load_model(model_path)
 
 # Check if model is loaded
