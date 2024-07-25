@@ -2,8 +2,22 @@ import pickle
 import streamlit as st
 import os
 import pandas as pd
+from sklearn import feature_extraction
+
+# Load dataset for testing
 df = pd.read_csv('Language Detection.csv')
 
+# Enhanced Data Preprocessing
+def remove_pun(text):
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'\d+', '', text)  # Remove digits
+    text = text.lower()
+    return text
+
+df['Text'] = df['Text'].apply(remove_pun)
+
+# Feature Engineering
+vec = feature_extraction.text.TfidfVectorizer(ngram_range=(1, 3), analyzer='char')
 
 # Model descriptions and file names
 model_info = {
@@ -50,18 +64,17 @@ st.write(f"### {model_option.replace('_', ' ').title()}")
 st.write(model_desc)
 
 # Load the selected model
-model_path = f'{model_option.replace(" ", "_").lower()}_model.pckl'
-Lrdetect_Model = load_model(model_path)
+Lrdetect_Model = load_model(model_file_name)
 
 # Check if model is loaded
 if Lrdetect_Model:
     # Display model accuracy if available
-    if hasattr(Lrdetect_Model, 'score'):
-        X_test = df['Text']  
-        Y_test = df['Language'] 
-        accuracy = Lrdetect_Model.score(X_test, Y_test) * 100
+    try:
+        X_test_vec = vec.fit_transform(df['Text'])
+        Y_test = df['Language']
+        accuracy = Lrdetect_Model.score(X_test_vec, Y_test) * 100
         st.write(f"**Accuracy:** {accuracy:.2f}%")
-    else:
+    except Exception as e:
         st.write("**Accuracy information not available for this model.**")
 
     # User input and prediction
@@ -70,7 +83,8 @@ if Lrdetect_Model:
     if st.button("Get Language Name"):
         if input_test:
             try:
-                prediction = Lrdetect_Model.predict([input_test])
+                input_test_vec = vec.transform([input_test])
+                prediction = Lrdetect_Model.predict(input_test_vec)
                 st.text(f"Predicted Language: {prediction[0]}")
             except Exception as e:
                 st.error(f"An error occurred during prediction: {e}")
