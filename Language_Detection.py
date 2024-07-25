@@ -32,7 +32,7 @@ def train_model(model_type):
     if model_type == 'logistic_regression':
         clf = LogisticRegression(max_iter=1000)  # Increased max_iter for convergence
     elif model_type == 'random_forest':
-        clf = RandomForestClassifier(n_estimators=100, random_state=42)
+        clf = RandomForestClassifier(n_estimators=10, max_depth=10, random_state=42)  # Reduced complexity
     elif model_type == 'svc':
         clf = SVC(kernel='linear')  # Linear kernel for simplicity
     else:
@@ -45,7 +45,7 @@ def train_model(model_type):
 
     # Train the model
     X = df['Text']
-    Y = df['Language']  # Assuming 'Language' is the target column
+    Y = df['Language']
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
     model_pipe.fit(X_train, Y_train)
 
@@ -88,4 +88,3 @@ trained_model = train_model(model_type)
 
 model_type = 'svc'  # Choose 'logistic_regression', 'random_forest', or 'svc'
 trained_model = train_model(model_type)
-
