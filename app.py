@@ -2,6 +2,7 @@ import pickle
 import streamlit as st
 import os
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Load dataset for testing
 df = pd.read_csv('Language Detection.csv')
